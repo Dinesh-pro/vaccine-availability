@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title> Covid Vaccine Availability</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">        <link href="{% static 'study_companion/styles.css' %}" rel="stylesheet">
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          get_states();
+        });
+
+        window.onload = function () {
+            var selectBox = document.getElementById("state");
+            selectBox.addEventListener('change', changeFunc);
+            function changeFunc() {
+              get_districts(this.value);
+              document.querySelector("#vaccinesite").innerHTML = '';
+
+              var selectBox2 = document.getElementById("district");
+            selectBox2.addEventListener('change', changeFunc2);
+            function changeFunc2() {
+              get_vaccinesite(this.value);
+            }
+            }
+          }
+
+
+
+        function get_states(){
+            fetch('https://cdn-api.co-vin.in/api/v2/admin/location/states', {
+                method: 'GET'
+            })
+            .then(response => response.json())
+            .then(result => {
+                document.querySelector("#state").innerHTML = '';
+
+
+                document.querySelector("#state").innerHTML = '<option selected>Select State</option>';
+                for (let state of result.states){
+                  document.querySelector("#state").innerHTML += `<option value=${state.state_id} >${state.state_name}</option>`;
+                }
+
+            });
+        }
+
+        function get_districts(id){
+            fetch('https://cdn-api.co-vin.in/api/v2/admin/location/districts/'+id, {
+                method: 'GET'
+            })
+            .then(response => response.json())
+            .then(result => {
+                document.querySelector("#district").innerHTML = '';
+
+                document.querySelector("#district").innerHTML = '<option selected>Select District</option>';
+                for (let district of result.districts){
+                  document.querySelector("#district").innerHTML += `<option value=${district.district_id}>${district.district_name}</option>`;
+                }
+
+            });
+        }
+
+        function get_vaccinesite(id){
+            fetch(`https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByDistrict?district_id=${id}&date=05-05-2021`, {
+                method: 'GET'
+            })
+            .then(response => response.json())
+            .then(result => {
+                document.querySelector("#vaccinesite").innerHTML = '';
+
+                if(result.sessions.length == 0){
+                document.querySelector("#vaccinesite").innerHTML = `
+                <div class="container">
+                <div class="alert alert-danger text-center" role="alert">
+                    No Vaccine sessions available right now.
+                </div>
+                </div>`;
+                }
+                else{
+                document.querySelector("#vaccinesite").innerHTML = `
+                <div class="container">
+                <div class="alert alert-success text-center" role="alert">
+                    Availble vaccine sessions in ${document.querySelector("#district").options[document.querySelector("#district").selectedIndex].text} district.
+                </div>
+                </div>`;
+                }
+
+
+                for (let session of result.sessions){
+                  document.querySelector("#vaccinesite").innerHTML += `
+                      <!--<div class = "container p-3 my-3 border rounded-lg">
+                        Center Name         : <strong>${session.name}</strong><br>
+                        Availabile capacity : <strong class="text-success">${session.available_capacity}</strong><br>
+                        Minimum Age Limit   : <strong>${session.min_age_limit}</strong>
+                      </div>
+                        -->
+
+                        <div class="container p-3 my-3 border rounded-lg">
+                          <div class="row">
+
+                            <div class="col">
+                            Center Name         : <strong>${session.name}</strong><br>
+                            Area                : <strong>${session.block_name}</strong><br>
+                            </div>
+                            <div class="col">
+                            Availabile capacity : <strong class="text-success">${session.available_capacity}</strong><br>
+                            Minimum Age Limit   : <strong>${session.min_age_limit}</strong><br>
+                            Vaccine Available: <strong>${session.vaccine}</strong>
+                          </div>
+                          </div>
+
+                        </div>
+
+
+
+
+
+                  `;
+                }
+
+            });
+        }
+
+
+
+        </script>
+
+    </head>
+    <body>
+
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <a class="navbar-brand">Covid Vaccine Availability  - 5th May 2021</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+                      <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://www.cowin.gov.in/home">
+                                <button type="button" class="btn btn-primary" ><strong>Register at Cowin Website</strong></button>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://www.mohfw.gov.in/">MoHFW Website</a>
+                            </li>
+                    </div>
+            </nav>
+
+            <div class="body container">
+                <form style="padding-top:20px">
+                    <div class="form-row">
+                        <div class="col">
+                          <select class="custom-select my-1 mr-sm-2" id="state">
+                                <option selected>Select State</option>
+                          </select>
+                        </div>
+                        <div class="col">
+                        <select class="custom-select my-1 mr-sm-2" id="district">
+                            <option selected>Select District</option>
+                        </select>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="container" id="vaccinesite" style="padding-top:20px">
+
+                </div>
+            </div>
+
+
+    </body>
+</html>
