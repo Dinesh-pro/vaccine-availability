@@ -14,18 +14,21 @@
         window.onload = function () {
             var selectBox = document.getElementById("state");
             selectBox.addEventListener('change', changeFunc);
+
+             var today = new Date();
+              today = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-'+  String(today.getDate()).padStart(2, '0');
+              document.querySelector("#date").value= today;
+
             function changeFunc() {
               get_districts(this.value);
               document.querySelector("#vaccinesite").innerHTML = '';
 
-              var selectBox2 = document.getElementById("district");
-            selectBox2.addEventListener('change', changeFunc2);
-            function changeFunc2() {
-              get_vaccinesite(this.value);
             }
-            }
-          }
+          };
 
+        function run(){
+            get_vaccinesite(document.getElementById("district").value);
+        }
 
 
         function get_states(){
@@ -45,6 +48,7 @@
             });
         }
 
+
         function get_districts(id){
             fetch('https://cdn-api.co-vin.in/api/v2/admin/location/districts/'+id, {
                 method: 'GET'
@@ -61,8 +65,12 @@
             });
         }
 
+
+
         function get_vaccinesite(id){
-            fetch(`https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByDistrict?district_id=${id}&date=05-05-2021`, {
+            d = document.querySelector("#date").value;
+            d_format = d[8]+d[9]+'-'+d[5]+d[6]+'-'+d[0]+d[1]+d[2]+d[3];
+            fetch(`https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByDistrict?district_id=${id}&date=${d_format}`, {
                 method: 'GET'
             })
             .then(response => response.json())
@@ -81,7 +89,7 @@
                 document.querySelector("#vaccinesite").innerHTML = `
                 <div class="container">
                 <div class="alert alert-success text-center" role="alert">
-                    Availble vaccine sessions in ${document.querySelector("#district").options[document.querySelector("#district").selectedIndex].text} district.
+                    Available vaccine sessions in ${document.querySelector("#district").options[document.querySelector("#district").selectedIndex].text} district.
                 </div>
                 </div>`;
                 }
@@ -112,17 +120,11 @@
 
                         </div>
 
-
-
-
-
                   `;
                 }
 
             });
         }
-
-
 
         </script>
 
@@ -130,7 +132,7 @@
     <body>
 
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <a class="navbar-brand">Covid Vaccine Availability  - 5th May 2021</a>
+                <a class="navbar-brand">Covid Vaccine Availability</a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
@@ -152,6 +154,7 @@
             <div class="body container">
                 <form style="padding-top:20px">
                     <div class="form-row">
+
                         <div class="col">
                           <select class="custom-select my-1 mr-sm-2" id="state">
                                 <option selected>Select State</option>
@@ -162,17 +165,27 @@
                             <option selected>Select District</option>
                         </select>
                         </div>
+
                     </div>
+                    <div class="form-row">
+                        <div class="col"></div>
+                        <div class="col" style="margin: auto;display: flex; align-items: center;padding-top:10px">
+                        <input class="form-control"  id="date" type="date" name="date" placeholder="Date" style="margin-right:20px;" />
+                        <button type="button" class="btn btn-primary" onclick="run();" ><strong>Search</strong></button>
+                        </div>
+                        <div class="col"></div>
+                    </div>
+
                 </form>
 
                 <div class="container" id="vaccinesite" style="padding-top:20px">
 
                 </div>
+
                 <nav class="navbar fixed-bottom navbar-light bg-light " style="text-align:center;display: inline-block;">
                   <a class="navbar-brand"  href="https://apisetu.gov.in/public/marketplace/api/cowin">Made with Co-WIN Public APIs from API Setu </a>
                 </nav>
             </div>
-
 
     </body>
 </html>
