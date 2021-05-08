@@ -6,6 +6,8 @@
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+        <script src="https://kit.fontawesome.com/ee21475eb7.js" crossorigin="anonymous"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <script>
         document.addEventListener('DOMContentLoaded', function() {
           get_states();
@@ -27,7 +29,13 @@
           };
 
         function run(){
+            if(document.querySelector("#state").value==0){
+                alert("Select State");
+            }else if(document.querySelector("#district").value==0){
+                alert("Select District");
+            }else{
             get_vaccinesite(document.getElementById("district").value);
+            }
         }
 
 
@@ -40,7 +48,7 @@
                 document.querySelector("#state").innerHTML = '';
 
 
-                document.querySelector("#state").innerHTML = '<option selected>Select State</option>';
+                document.querySelector("#state").innerHTML = '<option value=0 selected>Select State</option>';
                 for (let state of result.states){
                   document.querySelector("#state").innerHTML += `<option value=${state.state_id} >${state.state_name}</option>`;
                 }
@@ -57,7 +65,7 @@
             .then(result => {
                 document.querySelector("#district").innerHTML = '';
 
-                document.querySelector("#district").innerHTML = '<option selected>Select District</option>';
+                document.querySelector("#district").innerHTML = '<option value=0 selected>Select District</option>';
                 for (let district of result.districts){
                   document.querySelector("#district").innerHTML += `<option value=${district.district_id}>${district.district_name}</option>`;
                 }
@@ -96,6 +104,19 @@
 
 
                 for (let session of result.sessions){
+
+                    var session_show=false;
+                    if (document.querySelector("#v1").checked == true){
+                        session_show =true;
+                    }
+                    if (document.querySelector("#v2").checked == true && session.vaccine == "COVISHIELD"){
+                            session_show = true;
+                    }
+                    if (document.querySelector("#v3").checked == true && session.vaccine == "COVAXIN"){
+                            session_show = true;
+                    }
+
+                if(session_show == true){
                   document.querySelector("#vaccinesite").innerHTML += `
                       <!--<div class = "container p-3 my-3 border rounded-lg">
                         Center Name         : <strong>${session.name}</strong><br>
@@ -121,6 +142,9 @@
                         </div>
 
                   `;
+
+
+                }
                 }
 
             });
@@ -129,7 +153,7 @@
         </script>
 
     </head>
-    <body>
+    <body style="padding-bottom: 70px;">
 
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
                 <a class="navbar-brand">Covid Vaccine Availability</a>
@@ -140,7 +164,7 @@
                       <ul class="navbar-nav ml-auto">
                             <li class="nav-item">
                                 <a class="nav-link" href="https://www.cowin.gov.in/home">
-                                <button type="button" class="btn btn-primary" ><strong>Register at Cowin Website</strong></button>
+                                <button type="button" class="btn btn-primary" ><strong>Register at CoWIN Website</strong></button>
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -165,27 +189,52 @@
                             <option selected>Select District</option>
                         </select>
                         </div>
+                        <div class="col"style="padding-top:4px;">
+                            <input class="form-control"  id="date" type="date" name="date" placeholder="Date"  />
+                        </div>
+
 
                     </div>
+
                     <div class="form-row">
-                        <div class="col"></div>
-                        <div class="col" style="margin: auto;display: flex; align-items: center;padding-top:10px">
-                        <input class="form-control"  id="date" type="date" name="date" placeholder="Date" style="margin-right:20px;" />
-                        <button type="button" class="btn btn-primary" onclick="run();" ><strong>Search</strong></button>
+                        <div class="col-3">
                         </div>
-                        <div class="col"></div>
+                        <div class="col-6" style="margin: auto;display: flex; align-items: center;padding-top:10px">
+                            <div class="btn-group btn-group-toggle" data-toggle="buttons" onchange="run();">
+                              <label class="btn btn-secondary " disabled>
+                                 Select Vaccine:
+                              </label>
+                              <label class="btn btn-secondary active">
+                                <input type="radio" name="options" id="v1" autocomplete="off" checked> Any
+                              </label>
+                              <label class="btn btn-secondary">
+                                <input type="radio" name="options" id="v2" autocomplete="off"> Covishield
+                              </label>
+                              <label class="btn btn-secondary">
+                                <input type="radio" name="options" id="v3" autocomplete="off"> Covaxin
+                              </label>
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="run();" style ="margin-left:20px;"><strong>Search</strong></button>
+                        </div>
+
+                        <div class="col-3">
+
+                        </div>
                     </div>
 
                 </form>
+
+
 
                 <div class="container" id="vaccinesite" style="padding-top:20px">
 
                 </div>
 
+
                 <nav class="navbar fixed-bottom navbar-light bg-light " style="text-align:center;display: inline-block;">
                   <a class="navbar-brand"  href="https://apisetu.gov.in/public/marketplace/api/cowin">Made with Co-WIN Public APIs from API Setu </a>
                 </nav>
-            </div>
 
+            </div>
     </body>
 </html>
