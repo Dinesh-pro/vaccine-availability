@@ -98,6 +98,9 @@
                     if (document.querySelector("#v3").checked == true && session.vaccine == "COVAXIN"){
                             session_show = true;
                     }
+                    if (document.querySelector("#v3").checked == true && session.vaccine == "Sputnik V"){
+                            session_show = true;
+                    }
 
                 if(session_show == true){
                     session_num++;
@@ -203,6 +206,9 @@
                               </label>
                               <label class="btn btn-secondary">
                                 <input type="radio" name="options" id="v3" autocomplete="off"> Covaxin
+                              </label>
+                              <label class="btn btn-secondary">
+                                <input type="radio" name="options" id="v4" autocomplete="off"> Sputnik V
                               </label>
                             </div>
                             <button type="button" class="btn btn-primary" onclick="run();" style ="margin-left:20px;"><strong>Search</strong></button>
