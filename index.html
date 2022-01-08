@@ -101,7 +101,18 @@
                     if (document.querySelector("#v4").checked == true && session.vaccine == "SPUTNIK V"){
                             session_show = true;
                     }
-
+                    if (document.querySelector("#fee1").checked == true){
+                        session_show =true;
+                    }
+                    if (document.querySelector("#fee2").checked == true && session.fee_type == "Free"){
+                            session_show = true;
+                    }
+                    if (document.querySelector("#fee3").checked == true && session.fee_type == "Paid"){
+                            session_show = true;
+		    }
+                    if (session.available_capacity == 0){
+                            session_show = false
+                    }
                 if(session_show == true){
                     session_num++;
                   document.querySelector("#vaccinesite").innerHTML += `
@@ -114,14 +125,15 @@
 
                         <div class="container p-3 my-3 border rounded-lg">
                           <div class="row">
-                            <div class="col">
+                            <div class="col-8">
                             Center Name         : <strong>${session.name}</strong><br>
-                            Area                : <strong>${session.block_name}</strong><br>
+                            Address             : <strong>${session.block_name},${session.address}</strong><br>
                             </div>
-                            <div class="col">
-                            Availabile capacity : <strong class="text-success">${session.available_capacity}</strong><br>
-                            Minimum Age Limit   : <strong>${session.min_age_limit}</strong><br>
-                            Vaccine Available: <strong>${session.vaccine}</strong>
+                            <div class="col-4">
+                            <span class="badge bg-primary text-light">${session.fee_type}</span>
+			    <span class="badge bg-danger text-light">${session.min_age_limit}+</span>
+			    <span class="badge bg-success text-light">${session.vaccine}</span><br>
+			    Availabile capacity : <strong class="text-success">${session.available_capacity}</strong>
                           </div>
                           </div>
                         </div>
@@ -211,6 +223,22 @@
                                 <input type="radio" name="options" id="v4" autocomplete="off"> Sputnik V
                               </label>
                             </div>
+
+                            <div class="btn-group btn-group-toggle" data-toggle="buttons" onchange="run();"style ="margin-left:20px;">
+                              <label class="btn btn-secondary " disabled>
+                                 Fee type:
+                              </label>
+                              <label class="btn btn-secondary active">
+                                <input type="radio" name="options" id="fee1" autocomplete="off" checked> Any
+                              </label>
+                              <label class="btn btn-secondary">
+                                <input type="radio" name="options" id="fee2" autocomplete="off"> Free
+                              </label>
+                              <label class="btn btn-secondary">
+                                <input type="radio" name="options" id="fee3" autocomplete="off"> Paid
+                              </label>
+                            </div>
+
                             <button type="button" class="btn btn-primary" onclick="run();" style ="margin-left:20px;"><strong>Search</strong></button>
                         </div>
 
